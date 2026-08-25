@@ -15,6 +15,9 @@ out/
 !**/src/test/**/out/
 
 src/main/resources/application-local.yaml
+http/**/*local.http
+http/**/*local.json
+
 
 ### VS Code ###
 .vscode/

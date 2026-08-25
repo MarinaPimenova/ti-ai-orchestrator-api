@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '4.1.0'
@@ -20,15 +22,53 @@ repositories {
 
 ext {
     set('springAiVersion', "2.0.0")
+    set('langGraphVersion', "1.8.24")
 }
 
 dependencies {
+
     implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //implementation 'org.springframework.ai:spring-ai-starter-mcp-client'
     implementation 'org.springframework.ai:spring-ai-starter-model-anthropic'
     implementation 'org.springframework.ai:spring-ai-starter-model-chat-memory'
     implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+    implementation 'org.springframework.ai:spring-ai-openai'
+
+    implementation 'org.bsc.langgraph4j:langgraph4j-core'
+
+    //implementation 'com.vladmihalcea:hibernate-types-60:2.21.1'
+
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
+
+    implementation 'org.apache.httpcomponents.client5:httpclient5'
+
+    implementation 'org.apache.tika:tika-core:3.2.2'
+    implementation 'org.apache.tika:tika-parsers-standard-package:3.2.2'
+
+    runtimeOnly 'org.postgresql:postgresql'
+
+
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // Observability dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // Metrics
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    // Micrometer Tracing -> OpenTelemetry
+    runtimeOnly 'io.micrometer:micrometer-tracing-bridge-otel'
+    // OpenTelemetry -> Zipkin exporter
+    runtimeOnly 'io.opentelemetry:opentelemetry-exporter-zipkin'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -37,9 +77,22 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+        mavenBom "org.bsc.langgraph4j:langgraph4j-bom:${langGraphVersion}"
     }
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.processResources {
+    filesMatching('application.yaml') {
+        filter(ReplaceTokens, tokens: [
+                'project.version': project.version.toString()
+        ])
+    }
+}
+
+tasks.named('jar') {
+    enabled = false
 }
