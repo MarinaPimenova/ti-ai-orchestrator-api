@@ -34,7 +34,7 @@ public class AppConfig {
         int cores = Runtime.getRuntime().availableProcessors();
         int corePool = cores * 2;
         int maxPool = cores * 4;
-        int queue = 2000;
+        int queue = 200;
         return new ThreadPoolExecutor(corePool, maxPool, 30, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(queue),
                 runnable -> {

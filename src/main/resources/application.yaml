@@ -58,6 +58,8 @@ spring:
       host: ${MEMORY_PROMPT_REDIS_CACHE_HOST}
       port: ${MEMORY_PROMPT_REDIS_CACHE_PORT:6379}
   ai:
+    model:
+      chat: openai
     openai:
       api-key: ${OPEN_AI_API_KEY}
       base-url: ${OPEN_AI_ENDPOINT:https://ai-proxy.lab.epam.com}
@@ -65,7 +67,13 @@ spring:
         completions-path: "${OPEN_AI_COMPLETIONS_PATH:/openai/deployments/gpt-chat-latest-reasoning/chat/completions}"
         model: "${CHAT_MODEL:gpt-chat-latest-reasoning}" # gpt-5-2025-08-07-reasoning  anthropic.claude-sonnet-5
         base-url: ${OPEN_AI_ENDPOINT:https://ai-proxy.lab.epam.com}
-        embeddings-path: ${EMBEDDINGS_PATH:/openai/deployments/text-embedding-ada-002/embeddings}
+        temperature: 0.7
+    retry:
+      max-attempts: 2
+      backoff:
+        initial-interval: 4000ms
+      on-client-errors: true
+    timeout: 40000ms
 
 
 conversation:
