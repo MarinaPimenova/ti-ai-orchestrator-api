@@ -1,0 +1,6 @@
+# To get list of all available models
+GET https://ai-proxy.lab.epam.com/openai/deployments
+Accept: application/json
+Api-Key: MY_KEY
+
+###
