@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
@@ -59,6 +62,11 @@ public class RestTemplateConfig {
         //requestFactory.setConnectTimeout(Duration.ofMillis(connectTimeout));
         requestFactory.setReadTimeout(Duration.ofMillis(readTimeout));
 
-        return new RestTemplate(requestFactory);
+        RestTemplate restTemplate = new RestTemplate(requestFactory);
+
+        restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
+        restTemplate.getMessageConverters().add(new ResourceHttpMessageConverter());
+        restTemplate.getMessageConverters().add(new ByteArrayHttpMessageConverter());
+        return restTemplate;
     }
 }

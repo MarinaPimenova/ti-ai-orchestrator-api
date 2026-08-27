@@ -13,17 +13,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.converter.ByteArrayHttpMessageConverter;
-import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.http.converter.ResourceHttpMessageConverter;
+
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.concurrent.*;
 
+@SuppressWarnings("deprecation")
 @Configuration
 public class AppConfig {
+    @Bean
+    public Executor taskExecutor() {
+        return Executors.newFixedThreadPool(10);
+    }
     @Bean
     public Executor agentExecutor() {
         return Executors.newFixedThreadPool(10);
@@ -83,17 +86,6 @@ public class AppConfig {
         return restTemplate;
     }
 
-    @Bean
-    public RestTemplate restTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
-
-        restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
-        restTemplate.getMessageConverters().add(new ResourceHttpMessageConverter());
-        restTemplate.getMessageConverters().add(new ByteArrayHttpMessageConverter());
-
-        return restTemplate;
-    }
-
     // Create a RestClient.Builder that is configured to use your RestTemplate's factory and interceptors
     @Bean
     public RestClient.Builder llmRestClientBuilder(RestTemplate llmRestTemplate) {
@@ -101,10 +93,8 @@ public class AppConfig {
         // Set the request factory from your RestTemplate
         builder.requestFactory(llmRestTemplate.getRequestFactory());
         // Explicitly add interceptors from RestTemplate to RestClient.Builder
-        if (llmRestTemplate.getInterceptors() != null) {
-            for (ClientHttpRequestInterceptor interceptor : llmRestTemplate.getInterceptors()) {
-                builder.requestInterceptor(interceptor);
-            }
+        for (ClientHttpRequestInterceptor interceptor : llmRestTemplate.getInterceptors()) {
+            builder.requestInterceptor(interceptor);
         }
         return builder;
     }

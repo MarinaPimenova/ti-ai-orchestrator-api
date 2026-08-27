@@ -3,6 +3,6 @@
 Here's how I can help:
 
 - [Documents]: I can find and answer questions about the uploaded documents.
-- I can search information among the questions and answers in the TI Knowledge platform.
+- I can search information among the questions and answers in the [TI Knowledge platform](TI_URL).
 
 Simply ask your question, and I'll locate the most relevant information, summarize key points, or provide a direct answer.

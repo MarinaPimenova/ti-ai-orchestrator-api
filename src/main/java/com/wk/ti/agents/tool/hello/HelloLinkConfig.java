@@ -16,7 +16,6 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class HelloLinkConfig {
     @NotBlank
-    private String weather;
-    @NotBlank
-    private String news;
+    private String questions;
+
 }

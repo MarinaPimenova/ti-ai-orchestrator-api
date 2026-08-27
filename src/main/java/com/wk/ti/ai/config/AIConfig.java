@@ -1,51 +1,67 @@
 package com.wk.ti.ai.config;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Validated
-public class AIConfig {
-    @NotBlank
-    private String apiKey;
-    @NotBlank
-    private String baseUrl;
-    @NotNull
-    private Chat chat;
+import java.time.Duration;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Validated
+@ConfigurationProperties(prefix = "spring.ai")
+@Component
+public class AIConfig {
+
+    @Valid
+    @NotNull
+    private OpenAI openai;
+
+    @Valid
+    @NotNull
+    private Retry retry;
+
+    private Duration timeout;
 
     @Data
-    @AllArgsConstructor
     @NoArgsConstructor
-    @Validated
-    public static class Chat {
-        @NotBlank
-        private String completionsPath;
-        @NotBlank
-        private String model;
-        @NotBlank
-        private String embeddingsPath;
-        @NotNull
-        private Options options;
+    @AllArgsConstructor
+    public static class Retry {
+        private int maxAttempts = 2;
     }
 
     @Data
-    @AllArgsConstructor
     @NoArgsConstructor
-    public static class Options {
+    @AllArgsConstructor
+    public static class OpenAI {
+        @NotBlank
+        private String apiKey;
+
+        @NotBlank
+        private String baseUrl;
+
+        @Valid
+        @NotNull
+        private Chat chat;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Chat {
+        @NotBlank
+        private String completionsPath;
+
         @NotBlank
         private String model;
 
-        private Integer maxTokens;
-
         private Double temperature;
-
-        private Boolean streamUsage;
     }
 }

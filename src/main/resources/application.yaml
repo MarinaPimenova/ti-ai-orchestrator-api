@@ -55,11 +55,12 @@ spring:
     password: ${ASSISTANT_PASSWORD}
   data:
     redis:
-      host: ${MEMORY_PROMPT_REDIS_CACHE_HOST}
-      port: ${MEMORY_PROMPT_REDIS_CACHE_PORT:6379}
+      ssl:
+        enabled: ${MEMORY_PROMPT_REDIS_SSQL_ENABLED:false}
+      host: ${MEMORY_PROMPT_REDIS_CACHE_HOST:127.0.0.1}
+      port: ${MEMORY_PROMPT_REDIS_CACHE_PORT:6380}
+
   ai:
-    model:
-      chat: openai
     openai:
       api-key: ${OPEN_AI_API_KEY}
       base-url: ${OPEN_AI_ENDPOINT:https://ai-proxy.lab.epam.com}
@@ -130,7 +131,7 @@ ms:
 
 link:
   hello:
-    kb: http://localhost
+    questions: "${LINK_HELLO_QUESTIONS:http://localhost:5000/dashboard-page/}"
 
 agent:
   timeout:
