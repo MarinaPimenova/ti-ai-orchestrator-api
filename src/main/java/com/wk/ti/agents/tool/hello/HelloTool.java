@@ -18,10 +18,8 @@ public class HelloTool {
             
                 Here's how I can help:
             
-                - [NEWS](%s): I retrieve information about news data.
-                - [WEATHER](%s): I search for relevant weather forecasts.
-                - Document: I can perform semantic search in the uploaded documents.
-                - Natural Disaster: I can search natural disaster information.
+                - [Documents]: I can find and answer questions about the uploaded documents.
+                - I can search information among the questions and answers in the [TI Knowledge platform](%s).
             
                 Simply ask your question, and I'll locate the most relevant information, summarize key points, or provide a direct answer.
             """;
@@ -55,15 +53,13 @@ public class HelloTool {
             // Use getInputStream() instead of getFile() to support reading from JAR
             try (var inputStream = resource.getInputStream()) {
                 String content = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8)
-                        .replace("WEATHER_URL", helloLinkConfig.getWeather())
-                        .replace("NEWS_URL", helloLinkConfig.getNews());
+                        .replace("TI_URL", helloLinkConfig.getQuestions());
                 return content.replace("\uFEFF", ""); //remove BOM character
             }
         } catch (Exception e) {
             log.error("Failed to read file 'hello-info.md' from resources: {}", e.getMessage(), e);
             return HELLO_PROMPT.formatted(
-                    helloLinkConfig.getNews(),
-                    helloLinkConfig.getWeather()
+                    helloLinkConfig.getQuestions()
             );
         }
     }

@@ -21,7 +21,7 @@ repositories {
 }
 
 ext {
-    set('springAiVersion', "2.0.0")
+    set('springAiVersion', "2.0.1")
     set('langGraphVersion', "1.8.24")
 }
 
@@ -32,14 +32,13 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    //implementation 'org.springframework.ai:spring-ai-starter-mcp-client'
-    implementation 'org.springframework.ai:spring-ai-starter-model-anthropic'
     implementation 'org.springframework.ai:spring-ai-starter-model-chat-memory'
-    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+    implementation 'org.springframework.ai:spring-ai-client-chat'
     implementation 'org.springframework.ai:spring-ai-openai'
+    implementation 'com.openai:openai-java-client-okhttp:4.49.0'
 
     implementation 'org.bsc.langgraph4j:langgraph4j-core'
 
@@ -50,7 +49,6 @@ dependencies {
     implementation 'org.apache.httpcomponents.client5:httpclient5'
 
     implementation 'org.apache.tika:tika-core:3.2.2'
-    implementation 'org.apache.tika:tika-parsers-standard-package:3.2.2'
 
     runtimeOnly 'org.postgresql:postgresql'
 

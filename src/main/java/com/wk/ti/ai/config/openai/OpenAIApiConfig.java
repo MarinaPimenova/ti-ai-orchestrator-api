@@ -1,78 +1,62 @@
 package com.wk.ti.ai.config.openai;
 
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.wk.ti.ai.config.AIConfig;
-import org.springframework.ai.chat.client.ChatClient;
+
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.model.ApiKey;
-import org.springframework.ai.model.SimpleApiKey;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
-
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.reactive.function.client.WebClient;
+
+import org.springframework.ai.chat.client.ChatClient;
+
+import java.time.Duration;
+import java.util.Map;
 
 @Configuration
 public class OpenAIApiConfig {
-    @Qualifier("openAIConfig")
-    private final OpenAIConfig aiConfig;
 
-    public OpenAIApiConfig(OpenAIConfig aiConfig) {
+    private final AIConfig aiConfig;
+
+    public OpenAIApiConfig(AIConfig aiConfig) {
         this.aiConfig = aiConfig;
     }
 
     @Bean
-    public OpenAiApi openAiApi(
-            @Qualifier("llmRestClientBuilder") RestClient.Builder llmRestClientBuilder,
-            WebClient.Builder webClientBuilder) {
+    public OpenAIClient openAIClient() {
 
-        DefaultResponseErrorHandler responseErrorHandler = new DefaultResponseErrorHandler();
-
-        MultiValueMap<String, String> headers = new HttpHeaders();
-        headers.add("Api-Key", aiConfig.getApiKey());
-        headers.add("cache-control", "no-cache");
-
-        ApiKey apiKey = new SimpleApiKey(aiConfig.getApiKey());
-
-        return new OpenAiApi(
-                aiConfig.getBaseUrl(),
-                apiKey,
-                headers,
-                aiConfig.getChat().getCompletionsPath(),
-                aiConfig.getChat().getEmbeddingsPath(),
-                llmRestClientBuilder,
-                webClientBuilder,
-                responseErrorHandler
-        );
+        return OpenAIOkHttpClient.builder()
+                .apiKey(aiConfig.getOpenai().getApiKey())
+                .baseUrl(aiConfig.getOpenai().getBaseUrl())
+                .build();
     }
 
     @Bean
-    public ChatModel chatModel(OpenAiApi openAiApi) {
-        AIConfig.Options opts = aiConfig.getChat().getOptions();
+    public OpenAiChatModel chatModel(OpenAIClient openAIClient) {
 
-        String model = (opts != null && opts.getModel() != null && !opts.getModel().isBlank())
-                ? opts.getModel()
-                : aiConfig.getChat().getModel();
+        AIConfig.Chat chat = aiConfig.getOpenai().getChat();
 
-        OpenAiChatOptions.Builder b = OpenAiChatOptions.builder()
-                .model(model)
-                .streamUsage(opts != null && Boolean.TRUE.equals(opts.getStreamUsage()));
+        OpenAiChatOptions.Builder optionsBuilder = OpenAiChatOptions.builder()
+                .model(chat.getModel())
+                .apiKey(aiConfig.getOpenai().getApiKey())
+                .baseUrl(aiConfig.getOpenai().getBaseUrl())
+                .customHeaders(Map.of(
+                        "Api-Key", aiConfig.getOpenai().getApiKey(),
+                        "cache-control", "no-cache"
+                ))
+                .maxRetries(2)
+                .timeout(Duration.ofSeconds(40))
+                .streamUsage(false);
 
-        // Only set temperature when configured (non-null) so the field is omitted otherwise.
-        if (opts != null && opts.getTemperature() != null) {
-            b.temperature(opts.getTemperature());
+        if (chat.getTemperature() != null) {
+            optionsBuilder.temperature(chat.getTemperature());
         }
 
-        OpenAiChatOptions openAiChatOptions = b.build();
-
         return OpenAiChatModel.builder()
-                .defaultOptions(openAiChatOptions)
-                .openAiApi(openAiApi)
+                .openAiClient(openAIClient)
+                .options(optionsBuilder.build())
                 .build();
     }
 

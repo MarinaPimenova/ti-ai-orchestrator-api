@@ -1,4 +1,4 @@
-package com.wk.ti.agents.tool.hello;
+package com.wk.ti.agents.tool.question.sql;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 @Component
-@ConfigurationProperties(prefix = "link.hello")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ConfigurationProperties(prefix = "api.text-to-sql")
 @Validated
-public class HelloLinkConfig {
-    @NotBlank
-    private String questions;
+public class QuestionApiConfig {
 
+    @NotBlank
+    private String searchResult;
 }

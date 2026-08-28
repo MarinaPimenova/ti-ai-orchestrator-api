@@ -3,10 +3,10 @@ package com.wk.ti.orchestrator.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wk.ti.orchestrator.repository.UUIDStringConverter;
-import com.vladmihalcea.hibernate.type.json.JsonType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Type;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @SuppressWarnings("JpaDataSourceORMInspection")
@@ -32,7 +32,10 @@ public class Question extends GeneralEntity {
     @Column(name = "conversation_id", columnDefinition = "uuid", nullable = false)
     private String conversationId; // chatId
 
-    @Column(name = "isid")
+    @Column(name = "chat_id")
+    private Long chatId;
+
+    @Column(name = "user_id")
     private String userId;
 
     @Column(name = "question")
@@ -50,12 +53,12 @@ public class Question extends GeneralEntity {
     @Column(name = "user_feedback")
     private String userFeedback;
 
-    @Type(JsonType.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "source_list", columnDefinition = "jsonb")
     private String source;
 
     // documentSet
-    @Type(JsonType.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "document_list", columnDefinition = "jsonb")
     private String document;
 

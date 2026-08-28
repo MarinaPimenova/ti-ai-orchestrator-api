@@ -1,7 +1,5 @@
 package com.wk.ti.orchestrator.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.wk.ti.orchestrator.model.AIGenerativeResponse;
 import com.wk.ti.orchestrator.model.Question;
 import com.wk.ti.orchestrator.model.QuestionStatus;
@@ -11,11 +9,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
+@SuppressWarnings("unused")
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class QuestionService {
-    private final ObjectMapper mapper;
+    //private final ObjectMapper mapper;
     private final QuestionStoreService questionStoreService;
 
     protected String getQuestion(long questionId) {
@@ -26,8 +25,9 @@ public class QuestionService {
      * Persist the question and return its generated ID.
      */
     
-    public Long createQuestion(String conversationId, String question, String userId) {
+    public Long createQuestion(String conversationId, Long chatId, String question, String userId) {
         Question newQuestion = Question.builder()
+                .chatId(chatId)
                 .conversationId(conversationId)
                 .userId(userId)
                 .question(question)
@@ -80,9 +80,9 @@ public class QuestionService {
         questionStoreService.setFallbackStatus(question);
     }
 
-    protected ChatQuestionResponse getChatQuestionsForUser(String chatId, String isid) {
+    protected ChatQuestionResponse getChatQuestionsForUser(String chatId, String userId) {
         List<Question> chatQuestions =
-                questionStoreService.getChatQuestionsForUser(chatId, isid);
+                questionStoreService.getChatQuestionsForUser(chatId, userId);
         List<QuestionWithFeedback> userQuestions = chatQuestions.stream().map(question ->
                 new QuestionWithFeedback(
                         question.getConversationId(),

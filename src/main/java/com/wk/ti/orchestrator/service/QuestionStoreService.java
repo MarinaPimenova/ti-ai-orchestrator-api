@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -60,8 +61,8 @@ public class QuestionStoreService {
     }
 
     @Transactional(readOnly = true)
-    public List<Question> getChatQuestionsForUser(String chatId, String isid) {
-        return questionRepository.findAllByConversationIdAndUserIdOrderByCreatedDateAsc(chatId, isid);
+    public List<Question> getChatQuestionsForUser(String chatId, String userId) {
+        return questionRepository.findAllByConversationIdAndUserIdOrderByCreatedDateAsc(chatId, userId);
     }
 
 }

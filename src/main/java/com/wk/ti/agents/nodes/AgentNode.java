@@ -13,7 +13,7 @@ import org.springframework.ai.tool.ToolCallback;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings("removal")
+@SuppressWarnings({"removal", "LombokGetterMayBeUsed"})
 @Slf4j
 public class AgentNode implements NodeAction<State> {
 
@@ -37,10 +37,6 @@ public class AgentNode implements NodeAction<State> {
     public Map<String, Object> apply(State state) {
 
         String userMessage = state.getCurrentMessage();
-
-/*        if (Agents.WEATHER_AGENT.name().equals(agentName)) {
-            userMessage = WeatherQueryParser.extractCity(userMessage);
-        }*/
 
         ChatClient.ChatClientRequestSpec request = chatClient
                 .prompt()
