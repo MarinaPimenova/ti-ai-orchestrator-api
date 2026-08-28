@@ -25,8 +25,9 @@ public class QuestionService {
      * Persist the question and return its generated ID.
      */
     
-    public Long createQuestion(String conversationId, String question, String userId) {
+    public Long createQuestion(String conversationId, Long chatId, String question, String userId) {
         Question newQuestion = Question.builder()
+                .chatId(chatId)
                 .conversationId(conversationId)
                 .userId(userId)
                 .question(question)

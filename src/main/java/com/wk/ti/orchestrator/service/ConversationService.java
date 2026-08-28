@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import static com.wk.ti.util.StringUtil.generateChatName;
 
+@SuppressWarnings("unused")
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class ConversationService {
     /**
      * Creates and persists a new conversation.
      */
-    protected void createNewChat(String conversationId, String question) {
+    protected Conversation createNewChat(String conversationId, String question) {
         var conversation = Conversation.builder()
                 .conversationId(conversationId)
                 .startQuestion(question)
@@ -49,6 +50,7 @@ public class ConversationService {
         var savedConversation = conversationRepository.saveAndFlush(conversation);
         log.info("New chat created. Conversation ID: {}, Database ID: {}",
                 savedConversation.getConversationId(), savedConversation.getId());
+        return savedConversation;
     }
 
     /**

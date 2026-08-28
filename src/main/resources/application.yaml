@@ -56,7 +56,7 @@ spring:
   data:
     redis:
       ssl:
-        enabled: ${MEMORY_PROMPT_REDIS_SSQL_ENABLED:false}
+        enabled: ${MEMORY_PROMPT_REDIS_CACHE_ENABLED:false}
       host: ${MEMORY_PROMPT_REDIS_CACHE_HOST:127.0.0.1}
       port: ${MEMORY_PROMPT_REDIS_CACHE_PORT:6380}
 
@@ -65,8 +65,8 @@ spring:
       api-key: ${OPEN_AI_API_KEY}
       base-url: ${OPEN_AI_ENDPOINT:https://ai-proxy.lab.epam.com}
       chat:
-        completions-path: "${OPEN_AI_COMPLETIONS_PATH:/openai/deployments/gpt-chat-latest-reasoning/chat/completions}"
-        model: "${CHAT_MODEL:gpt-chat-latest-reasoning}" # gpt-5-2025-08-07-reasoning  anthropic.claude-sonnet-5
+        completions-path: "${OPEN_AI_COMPLETIONS_PATH:/openai/deployments/gpt-4.1-mini-2025-04-14/chat/completions}"
+        model: "${CHAT_MODEL:gpt-4.1-mini-2025-04-14}" # gpt-4-turbo
         base-url: ${OPEN_AI_ENDPOINT:https://ai-proxy.lab.epam.com}
         temperature: 0.7
     retry:
@@ -75,7 +75,6 @@ spring:
         initial-interval: 4000ms
       on-client-errors: true
     timeout: 40000ms
-
 
 conversation:
   window-size: ${CONVERSATION_WINDOW_SIZE:5}            # recent turns to keep in sliding window
@@ -126,7 +125,7 @@ logging:
 
 ms:
   cors:
-    allowed-origins: "${SWAGGER_ALLOWED_ORIGINS:http://localhost:8080}"
+    allowed-origins: "${SWAGGER_ALLOWED_ORIGINS:http://localhost:8080,http://localhost:5173,http://localhost:7000,http://localhost:8087,http://localhost:8088,http://127.0.0.1}"
 
 link:
   hello:

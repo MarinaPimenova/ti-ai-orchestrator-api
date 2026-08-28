@@ -32,6 +32,9 @@ public class Question extends GeneralEntity {
     @Column(name = "conversation_id", columnDefinition = "uuid", nullable = false)
     private String conversationId; // chatId
 
+    @Column(name = "chat_id")
+    private Long chatId;
+
     @Column(name = "user_id")
     private String userId;
 

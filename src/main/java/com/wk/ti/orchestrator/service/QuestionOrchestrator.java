@@ -4,20 +4,11 @@ import com.wk.ti.orchestrator.model.*;
 import com.wk.ti.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-
-import static com.wk.ti.util.FileUtil.toTempFileWithUtf8IfText;
-import static java.lang.String.format;
 
 @Service
 @Slf4j
@@ -48,13 +39,15 @@ public class QuestionOrchestrator {
     public QuestionResponse writeQuestionToDatabase(String conversationId, String question) {
         Assert.hasText(question, "Question should not be empty");
         String userId = SecurityUtil.getCurrentUserIsid();
-        Optional<Conversation> conversation = conversationService.findConversation(conversationId);
-        if (conversation.isEmpty()) {
+        Optional<Conversation> optionalConversation = conversationService.findConversation(conversationId);
+        if (optionalConversation.isEmpty()) {
             log.info("Conversation not found for ID: {}", conversationId);
-            conversationService.createNewChat(conversationId, question);
+            optionalConversation = Optional.of(conversationService.createNewChat(conversationId, question));
         }
 
-        Long questionId = questionService.createQuestion(conversationId, question, userId);
+        Long questionId = questionService.createQuestion(conversationId,
+                optionalConversation.get().getId(),
+                question, userId);
         conversationService.updateModifiedDate(conversationId);
         return new QuestionResponse(conversationId, questionId.toString(), question);
     }
@@ -74,40 +67,4 @@ public class QuestionOrchestrator {
                     return null;
                 });
     }
-
-/*
-    public String uploadQuestions(MultipartFile multipartFile) {
-        Assert.notNull(multipartFile, "Upload new knowledge context cannot be null");
-
-        try {
-            File f = toTempFileWithUtf8IfText(multipartFile);
-
-            FileSystemResource resource = new FileSystemResource(f);
-
-            CompletableFuture<Void> processing = new CompletableFuture<>();
-            processing.completeAsync(() -> proxyEvaluatorService.proxyRequestToEvaluator(resource), taskExecutor)
-                    .whenComplete((result, ex) -> {
-                        if (ex != null) {
-                            String message = format("Async processing failed for file=%s. Caused by %s",
-                                    multipartFile.getOriginalFilename(), ex.getMessage());
-                            log.error(message);
-                        } else {
-                            String message = format("Async processing completed for file=%s.",
-                                    multipartFile.getOriginalFilename());
-                            log.info(message);
-                        }
-                        try {
-                            Files.deleteIfExists(f.toPath());
-                        } catch (IOException e) {
-                            log.warn("Failed to delete temporary file: {}", f.getAbsolutePath(), e);
-                        }
-                    });
-            return f.getName();
-        } catch (Exception ex) {
-            String message = format("Failed to upload file. caused: %s", ex.getMessage());
-            log.error(message);
-        }
-        return "failed";
-    }
-*/
 }
