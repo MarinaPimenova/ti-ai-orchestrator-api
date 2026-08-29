@@ -2,7 +2,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.1.0'
+    id 'org.springframework.boot' version '3.5.14'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -21,41 +21,49 @@ repositories {
 }
 
 ext {
-    set('springAiVersion', "2.0.1")
-    set('langGraphVersion', "1.8.24")
+    springAiVersion = '1.1.5'
+    set('langGraphVersion', "1.5.14")
+    apacheCommonsLang3Version = '3.18.0'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+        mavenBom "org.bsc.langgraph4j:langgraph4j-bom:${langGraphVersion}"
+    }
 }
 
 dependencies {
-
-    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    implementation 'org.springframework.ai:spring-ai-starter-model-chat-memory'
-    implementation 'org.springframework.ai:spring-ai-client-chat'
+    // Spring AI
     implementation 'org.springframework.ai:spring-ai-openai'
-    implementation 'com.openai:openai-java-client-okhttp:4.49.0'
+    implementation 'org.springframework.ai:spring-ai-rag'
+    implementation 'org.springframework.ai:spring-ai-advisors-vector-store'
+    implementation 'org.springframework.ai:spring-ai-pgvector-store'
+    implementation 'org.springframework.ai:spring-ai-mistral-ai'
+    implementation 'org.springframework.ai:spring-ai-starter-model-chat-memory'
 
     implementation 'org.bsc.langgraph4j:langgraph4j-core'
 
-    //implementation 'com.vladmihalcea:hibernate-types-60:2.21.1'
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    implementation 'org.apache.commons:commons-lang3:3.18.0'
+    // Swagger / OpenAPI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.16'
 
-    implementation 'org.apache.httpcomponents.client5:httpclient5'
-
-    implementation 'org.apache.tika:tika-core:3.2.2'
-
+    // PostgreSQL
     runtimeOnly 'org.postgresql:postgresql'
 
-
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     // Observability dependencies
+    // Actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     // Metrics
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
@@ -67,16 +75,20 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
+    // Apache Commons
+    implementation "org.apache.commons:commons-lang3:${apacheCommonsLang3Version}"
+    // Apache HttpClient 5
+    implementation 'org.apache.httpcomponents.client5:httpclient5'
 
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
-        mavenBom "org.bsc.langgraph4j:langgraph4j-bom:${langGraphVersion}"
-    }
+    implementation 'org.apache.tika:tika-core:3.2.2'
+
+    // Tests
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    testCompileOnly 'org.projectlombok:lombok'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {

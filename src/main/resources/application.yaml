@@ -68,13 +68,8 @@ spring:
         completions-path: "${OPEN_AI_COMPLETIONS_PATH:/openai/deployments/gpt-4.1-mini-2025-04-14/chat/completions}"
         model: "${CHAT_MODEL:gpt-4.1-mini-2025-04-14}" # gpt-4-turbo
         base-url: ${OPEN_AI_ENDPOINT:https://ai-proxy.lab.epam.com}
-        temperature: 0.7
-    retry:
-      max-attempts: 2
-      backoff:
-        initial-interval: 4000ms
-      on-client-errors: true
-    timeout: 40000ms
+        embeddings-path: ${EMBEDDINGS_PATH:/openai/deployments/text-embedding-ada-002/embeddings}
+
 
 conversation:
   window-size: ${CONVERSATION_WINDOW_SIZE:5}            # recent turns to keep in sliding window

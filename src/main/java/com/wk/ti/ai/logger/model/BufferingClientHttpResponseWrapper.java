@@ -1,7 +1,6 @@
 package com.wk.ti.ai.logger.model;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
@@ -11,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+@SuppressWarnings("NullableProblems")
 @Slf4j
 public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
 
@@ -33,12 +33,12 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
     }
 
     @Override
-    public @NonNull InputStream getBody() {
+    public InputStream getBody() {
         return new ByteArrayInputStream(body);
     }
 
     @Override
-    public @NonNull HttpStatus getStatusCode() throws IOException {
+    public HttpStatus getStatusCode() throws IOException {
         // Convert HttpStatusCode to int and then find the matching HttpStatus
         int statusCode = response.getStatusCode().value();
         return HttpStatus.valueOf(statusCode);
@@ -46,7 +46,7 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
 
 
     @Override
-    public @NonNull String getStatusText() throws IOException {
+    public String getStatusText() throws IOException {
         return response.getStatusText();
     }
 
@@ -56,7 +56,7 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
     }
 
     @Override
-    public @NonNull HttpHeaders getHeaders() {
+    public HttpHeaders getHeaders() {
         return response.getHeaders();
     }
 }
