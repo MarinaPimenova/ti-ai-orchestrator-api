@@ -6,7 +6,6 @@ import com.wk.ti.ai.logger.model.BufferingClientHttpResponseWrapper;
 import com.wk.ti.util.HeaderUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -15,18 +14,19 @@ import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 
+@SuppressWarnings("NullableProblems")
 @Slf4j
 @RequiredArgsConstructor
 public class DetailedLLMLoggingInterceptor implements ClientHttpRequestInterceptor {
     private final ObjectMapper objectMapper;
 
     @Override
-    public @NonNull ClientHttpResponse intercept(HttpRequest request,
-                                                 byte @NonNull [] body,
-                                                 ClientHttpRequestExecution execution) throws IOException {
+    public ClientHttpResponse intercept(HttpRequest request,
+                                        byte[] body,
+                                        ClientHttpRequestExecution execution) throws IOException {
 
         // ---------- REQUEST SIZE ----------
-        int requestSize = (body != null) ? body.length : 0;
+        int requestSize = body.length;
 
         long startTime = System.currentTimeMillis();
 
