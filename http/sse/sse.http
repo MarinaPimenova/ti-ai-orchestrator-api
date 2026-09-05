@@ -1,0 +1,46 @@
+### SSE answer flow (SseController, /rest/v1)
+### No auth required - /rest/** is permitAll (see ResourceServerConfig).
+###
+### Prerequisite: run one of the "Ask ..." requests in http/question/question.http
+### first - it saves conversationId/questionId as GLOBAL variables that the
+### requests below reuse.
+###
+### Real flow: 1) subscribe to SSE, 2) trigger processing (fire-and-forget,
+### the actual answer is streamed to the SSE subscription, computed by the
+### routing -> agent -> aggregator pipeline), 3) optionally cancel.
+
+### 1. Subscribe to the SSE stream for the question.
+### This is a long-lived streaming response (text/event-stream) - keep it
+### open (IntelliJ HTTP Client shows incoming events live) or use curl:
+###   curl -N {{host}}/rest/v1/sse/subscription/{{conversationId}}/{{questionId}}
+GET {{host}}/rest/v1/sse/subscription/{{conversationId}}/{{questionId}}
+Accept: text/event-stream
+
+###
+
+### 2. Trigger answer processing - with request #1 still open in another tab/
+### terminal, run this to kick off the agent pipeline; the answer is pushed
+### to the open SSE subscription rather than returned in this response.
+GET {{host}}/rest/v1/sse/question?conversationId={{conversationId}}&questionId={{questionId}}
+
+###
+
+### 3. Cancel a single subscription.
+DELETE {{host}}/rest/v1/sse/subscription/{{conversationId}}/{{questionId}}
+
+###
+
+### 4. Cancel a batch of subscriptions in one call.
+POST {{host}}/rest/v1/sse/subscriptions/cancel
+Content-Type: application/json
+
+{
+  "subscriptions": [
+    {
+      "conversationId": "{{conversationId}}",
+      "questionId": {{questionId}}
+    }
+  ]
+}
+
+###

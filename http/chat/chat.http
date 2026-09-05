@@ -1,0 +1,31 @@
+### Chat lifecycle (ChatController, /rest/v1)
+### Run against the "dev" environment (http-client.env.json) -> host = http://localhost:8085
+### No auth required - /rest/** is permitAll (see ResourceServerConfig).
+
+@conversationId = {{$uuid}}
+
+### 1. Case#1 - user is redirected to the AI Assistant from LP HOME.
+### Creates a new chat and stores the user's first question.
+POST {{host}}/rest/v1/lp/chat?conversationId={{conversationId}}
+Content-Type: application/json
+
+{
+  "question": "Hello, what can you help me with?"
+}
+
+###
+
+### 2. Rename the chat created above.
+POST {{host}}/rest/v1/chat/name?conversationId={{conversationId}}
+Content-Type: application/json
+
+{
+  "newName": "Getting started with TI Assistant"
+}
+
+###
+
+### 3. Delete the chat (and its questions) created above.
+DELETE {{host}}/rest/v1/chat?conversationId={{conversationId}}
+
+###

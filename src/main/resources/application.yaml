@@ -90,7 +90,7 @@ api:
     load-url: ${api.document.base-url}/api/v1/load-url
 
 group:
-  admin: ${ADMINS:admin@example.com}
+  admin: ${ADMINS:admin}
 
 management:
   endpoints:

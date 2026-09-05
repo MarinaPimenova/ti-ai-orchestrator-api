@@ -1,0 +1,73 @@
+### Ask a question + give feedback (QuestionController, /rest/v1)
+### No auth required - /rest/** is permitAll (see ResourceServerConfig).
+###
+### Each "Ask ..." request stores the question and returns a questionId.
+### Its response handler saves conversationId/questionId as GLOBAL variables
+### (client.global), so http/sse/sse.http can pick them up and run the rest
+### of the flow (subscribe -> trigger processing -> feedback) against the
+### same question. Run ONE of the three "Ask ..." requests below, then
+### switch to sse.http.
+
+### 1. Ask a question routed to HELLO_AGENT (greeting / off-topic / "what can you do")
+@newConversationId = {{$uuid}}
+
+POST {{host}}/rest/v1/question?conversationId={{newConversationId}}
+Content-Type: application/json
+
+{
+  "question": "Hi! What can you help me with?"
+}
+
+> {%
+    client.global.set("conversationId", response.body.conversationId);
+    client.global.set("questionId", response.body.questionId);
+%}
+
+###
+
+### 2. Ask a question routed to DOCUMENT_AGENT (content lookup inside uploaded documents)
+@newConversationId = {{$uuid}}
+
+POST {{host}}/rest/v1/question?conversationId={{newConversationId}}
+Content-Type: application/json
+
+{
+  "question": "What does the onboarding document say about the approval process?"
+}
+
+> {%
+    client.global.set("conversationId", response.body.conversationId);
+    client.global.set("questionId", response.body.questionId);
+%}
+
+###
+
+### 3. Ask a question routed to QUESTION_SQL_AGENT (lookup in the TI Knowledge DB)
+@newConversationId = {{$uuid}}
+
+POST {{host}}/rest/v1/question?conversationId={{newConversationId}}
+Content-Type: application/json
+
+{
+  "question": "Show me interview questions about Java concurrency stored in the knowledge base."
+}
+
+> {%
+    client.global.set("conversationId", response.body.conversationId);
+    client.global.set("questionId", response.body.questionId);
+%}
+
+###
+
+### 4. Submit feedback for the last question captured above (run after sse.http's
+### "trigger processing" request has produced an answer). Uses the GLOBAL
+### conversationId/questionId saved by whichever "Ask ..." request you ran.
+POST {{host}}/rest/v1/feedback?conversationId={{conversationId}}
+Content-Type: application/json
+
+{
+  "questionId": {{questionId}},
+  "feedback": "This answer was helpful."
+}
+
+###

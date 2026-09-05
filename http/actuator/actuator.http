@@ -1,0 +1,21 @@
+### Actuator smoke checks (/actuator/**, permitAll)
+### Useful right after startup to confirm the app, DB and Redis are wired up.
+
+### 1. Liveness/readiness - should report status UP once Postgres + Redis are reachable.
+GET {{host}}/actuator/health
+
+###
+
+### 2. Build/app info.
+GET {{host}}/actuator/info
+
+###
+
+### 3. Prometheus scrape endpoint.
+### NOTE: not available when running with the "local" profile - it caps
+### exposure to health,info and sets prometheus access to "none"
+### (see application-local.yaml). Use the default profile against the
+### full stack (or drop those two overrides locally) to try this one.
+GET {{host}}/actuator/prometheus
+
+###
