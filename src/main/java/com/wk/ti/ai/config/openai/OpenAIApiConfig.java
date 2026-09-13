@@ -3,65 +3,66 @@ package com.wk.ti.ai.config.openai;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.wk.ti.ai.config.AIConfig;
-
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.springframework.ai.chat.client.ChatClient;
-
-import java.time.Duration;
 import java.util.Map;
 
 @Configuration
 public class OpenAIApiConfig {
 
-    private final AIConfig aiConfig;
+    private final OpenAIConfig aiConfig;
 
-    public OpenAIApiConfig(AIConfig aiConfig) {
+    public OpenAIApiConfig(@Qualifier("openAIConfig") OpenAIConfig aiConfig) {
         this.aiConfig = aiConfig;
     }
 
     @Bean
-    public OpenAIClient openAIClient() {
-
+    public OpenAIClient openAiClient() {
         return OpenAIOkHttpClient.builder()
-                .apiKey(aiConfig.getOpenai().getApiKey())
-                .baseUrl(aiConfig.getOpenai().getBaseUrl())
+                .baseUrl(aiConfig.getBaseUrl())
+                .apiKey(aiConfig.getApiKey())
+                .putHeader("Api-Key", aiConfig.getApiKey())
+                .putHeader("Cache-Control", "no-cache")
                 .build();
     }
 
     @Bean
-    public OpenAiChatModel chatModel(OpenAIClient openAIClient) {
+    public ChatModel openChatModel(OpenAIClient openAiClient) {
+        AIConfig.Chat chat = aiConfig.getChat();
+        AIConfig.Options opts = chat.getOptions();
 
-        AIConfig.Chat chat = aiConfig.getOpenai().getChat();
+        String model = (opts != null && opts.getModel() != null && !opts.getModel().isBlank())
+                ? opts.getModel()
+                : "gpt-4.1-mini-2025-04-14";
 
         OpenAiChatOptions.Builder optionsBuilder = OpenAiChatOptions.builder()
-                .model(chat.getModel())
-                .apiKey(aiConfig.getOpenai().getApiKey())
-                .baseUrl(aiConfig.getOpenai().getBaseUrl())
+                .model(model)
+                .apiKey(aiConfig.getApiKey())
+                .baseUrl(aiConfig.getBaseUrl())
                 .customHeaders(Map.of(
-                        "Api-Key", aiConfig.getOpenai().getApiKey(),
+                        "Api-Key", aiConfig.getApiKey(),
                         "cache-control", "no-cache"
-                ))
-                .maxRetries(2)
-                .timeout(Duration.ofSeconds(40))
-                .streamUsage(false);
-
-        if (chat.getTemperature() != null) {
-            optionsBuilder.temperature(chat.getTemperature());
+                ));
+//                .maxRetries(2)
+//                .timeout(Duration.ofSeconds(40))
+//                .streamUsage(false);
+        if (opts.getTemperature() != null) {
+            optionsBuilder.temperature(opts.getTemperature());
         }
-
         return OpenAiChatModel.builder()
-                .openAiClient(openAIClient)
+                .openAiClient(openAiClient)
                 .options(optionsBuilder.build())
                 .build();
     }
 
     @Bean
-    public ChatClient openAiChatClient(ChatModel chatModel) {
-        return ChatClient.builder(chatModel).build();
+    public ChatClient openAiChatClient(ChatModel openChatModel) {
+        return ChatClient.builder(openChatModel).build();
     }
 }

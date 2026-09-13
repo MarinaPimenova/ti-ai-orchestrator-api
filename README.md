@@ -265,3 +265,10 @@ After startup:
     - `conversationId`
     - `questionId`
     - response summary/source payload
+
+---
+
+#### Troubleshooting
+
+Firefox can’t establish a connection to the server at 
+http://localhost:8080/api/v1/ai-orchestrator/sse/subscription/ff0aab98-9a64-4391-bbb7-ac556c1a80bf/3.

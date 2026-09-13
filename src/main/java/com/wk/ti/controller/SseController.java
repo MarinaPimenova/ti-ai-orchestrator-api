@@ -11,7 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @ResponseBody
-@RequestMapping("/rest/v1")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class SseController {
     private final SseService sseService;

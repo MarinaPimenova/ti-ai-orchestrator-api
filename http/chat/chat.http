@@ -3,7 +3,7 @@
 ### No auth required - /rest/** is permitAll (see ResourceServerConfig).
 
 @conversationId = {{$uuid}}
-
+# http://localhost:8080/rest/v1/ai-orchestrator/lp/chat?conversationId=ff0aab98-9a64-4391-bbb7-ac556c1a80bf
 ### 1. Case#1 - user is redirected to the AI Assistant from LP HOME.
 ### Creates a new chat and stores the user's first question.
 POST {{host}}/rest/v1/lp/chat?conversationId={{conversationId}}
